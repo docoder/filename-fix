@@ -5,7 +5,8 @@ A tool for fix filename
 ## Features
 
 - Fix filename number prefix, skip when dir or file without number prefix
-- Fix filename space with separator replacement, ignore the space before file extension
+- Fix filename space with separator replacement, ignore the space before filename and file extension
+- Fix file extension lowercase or uppercase, ignore file without extension
 - ... ...
 
 ## Installation
@@ -21,12 +22,15 @@ $ cargo install filenamefix
     CMD:
         number
         space
+        ext
     ARGS:
         <params> 
             (CMD: number)
             Number of digits in number prefix of filename, default 2
             (CMD: space)
             The separator that spaces are replaced with, default "_"
+            (CMD: ext)
+            If "upper", make the file extension uppercase, otherwise lowercase, default lowercase
         <dirname> dirname of files to fix
 
 ## Examples
@@ -54,5 +58,15 @@ $ cargo install filenamefix
     "a b c" -> "a_b_c"
     "b c d .rs" -> "b_c_d.rs"
     " c d e.rs" -> "c_d_e.rs"
+
+    $ filenamefix ext upper /example/path
+    "a.rs" -> "a.RS"
+    "b" -> "b"
+    "c.RS" -> "c.RS"
+
+    $ filenamefix ext /example/path
+    "a.rs" -> "a.rs"
+    "b" -> "b"
+    "c.RS" -> "c.rs"
 
 
