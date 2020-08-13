@@ -20,15 +20,15 @@ $ cargo install filenamefix
 USAGE:
     filenamefix CMD [<params>] <dirname>
 CMD:
- 		number
- 		space
+ 	number
+ 	space
 ARGS:
-		<params> 
-				(CMD: number)
-				Number of digits in number prefix of filename, default 2
-				(CMD: space)
-				The separator that spaces are replaced with, default "_"
-		<dirname> dirname of files to fix
+	<params> 
+        (CMD: number)
+        Number of digits in number prefix of filename, default 2
+        (CMD: space)
+        The separator that spaces are replaced with, default "_"
+	<dirname> dirname of files to fix
 ```
 
 ## Examples
