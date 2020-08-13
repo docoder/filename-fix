@@ -29,6 +29,8 @@ impl Config {
 pub fn run (config: Config) -> Result<(), Box<dyn Error>> {
     if config.cmd.eq("number") {
         fix_number(&config.dirname, &config.params).expect("Error!");
+    } else if config.cmd.eq("space") {
+        fix_space(&config.dirname, &config.params).expect("Error!"); 
     }
     Ok(())
 }
@@ -74,6 +76,31 @@ fn fix_number(dirname: &str, params: &Option<String>) -> std::io::Result<()> {
     Ok(())
 }
 
+fn fix_space(dirname: &str, params: &Option<String>) -> std::io::Result<()> {
+    let divider = match params {
+        Some(params) => params,
+        None => "_"
+    };
+    for entry in WalkDir::new(dirname)
+            .into_iter()
+            .filter_map(Result::ok)
+            .filter(|e| !e.file_type().is_dir() && !is_hidden(e)) {
+        let f_name = String::from(entry.file_name().to_string_lossy());
+        let re = Regex::new(r"(.+?)(\.[^.]*$|$)").unwrap();
+        let caps = re.captures(&f_name).unwrap();
+        let f_name_without_extension = caps.get(1).map_or("", |m| m.as_str()).trim();
+        let parts: Vec<&str> = f_name_without_extension.split_whitespace().collect();
+        let new_f_name_without_extension:String = parts.join(divider);
+        let extension = caps.get(2).map_or("", |m| m.as_str());
+        let new_f_name = format!("{}{}", new_f_name_without_extension, extension);
+        let path = entry.into_path();
+        let mut new_path = path.clone();
+        new_path.set_file_name(new_f_name);
+        fs::rename(path, new_path)?;
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -82,5 +109,11 @@ mod tests {
         let dirname = "./src/testdir";
         let params = "2";
         assert_eq!((), fix_number(&dirname, &Some(params.to_string())).unwrap());
+    }
+    #[test]
+    fn fix_filename_space() {
+        let dirname = "./src/testdir";
+        let params = "-";
+        assert_eq!((), fix_space(&dirname, &Some(params.to_string())).unwrap());
     }
 }
